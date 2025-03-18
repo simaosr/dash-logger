@@ -1,0 +1,46 @@
+/* assets/dash_logger.css */
+.dash-logger {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.dash-logger input {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.dash-logger-entry {
+    margin-bottom: 5px;
+}
+
+.dash-logger-entry.info {
+    background-color: #f0f0f0;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.dash-logger-entry.error {
+    background-color: #f8d7da;
+    padding: 5px;
+    border-radius: 3px;
+}
+.dash-logger-entry.warning {
+    background-color: #fff3cd;
+    padding: 5px;
+    border-radius: 3px;
+}
+.dash-logger-entry.debug {
+    background-color: #d4edda;
+    padding: 5px;
+    border-radius: 3px;
+}
+.dash-logger-entry.critical {
+    background-color: #f8d7da;
+    padding: 5px;
+    border-radius: 3px;
+}

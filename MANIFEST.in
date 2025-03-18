@@ -1,0 +1,12 @@
+include dash_logger/dash_logger.min.js
+include dash_logger/dash_logger.min.js.map
+include dash_logger/async-*.js
+include dash_logger/async-*.js.map
+include dash_logger/*-shared.js
+include dash_logger/*-shared.js.map
+include dash_logger/metadata.json
+include dash_logger/package-info.json
+include assets/dash_logger.css
+include README.md
+include LICENSE
+include package.json

@@ -1,3 +1,33 @@
+Metadata-Version: 2.2
+Name: dash_logger
+Version: 0.0.1
+Summary: A Dash component to visualize python loggers
+Home-page: https://github.com/simaosr/dash-logger
+Author: Simão Rodrigues <simaor@hotmail.com>
+Author-email: simaor@hotmail.com
+License: MIT
+Classifier: Framework :: Dash
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: dash>=2.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # Dash Logger
 
 Dash Logger is a Dash component library.
