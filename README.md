@@ -38,38 +38,51 @@ Here is a simple example of how to use Dash Logger in a Dash application:
 
 ```python
 import dash
-import dash_html_components as html
-from dash_logger import DashLogger
+from dash import html, Input, Output, callback
+from dash_logger import init_app, DashLogger, create_logger
 
-app = dash.Dash(__name__)
+# Initialize app
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
-# Initialize the logger component
-logger = DashLogger(id='logger')
+# Initialize the logging system
+log_manager = init_app(app)
 
-app.layout = html.Div([
-    logger,
-    html.Button('Log Info', id='log-info-button'),
-    html.Button('Log Warning', id='log-warning-button'),
-    html.Button('Log Error', id='log-error-button')
-])
+# Get loggers for different components
+main_logger = create_logger("main")
 
-@app.callback(
-    dash.dependencies.Output('logger', 'log'),
-    [dash.dependencies.Input('log-info-button', 'n_clicks'),
-     dash.dependencies.Input('log-warning-button', 'n_clicks'),
-     dash.dependencies.Input('log-error-button', 'n_clicks')]
+logger = DashLogger(id="main-logger", loggerName="main")
+
+# Layout
+app.layout = html.Div(
+    [
+        html.H1("Dash Logger Component Example"),
+        logger,
+        html.Button("Log Info", id="log-info-button"),
+        html.Button("Log Warning", id="log-warning-button"),
+        html.Button("Log Error", id="log-error-button"),
+    ]
+)
+
+@callback(
+    Output("log-info-button", "n_clicks"),
+    Output("log-warning-button", "n_clicks"),
+    Output("log-error-button", "n_clicks"),
+    Input("log-info-button", "n_clicks"),
+    Input("log-warning-button", "n_clicks"),
+    Input("log-error-button", "n_clicks"),
+    prevent_initial_call=True,
 )
 def update_log(info_clicks, warning_clicks, error_clicks):
     if info_clicks:
-        return {'level': 'info', 'message': 'This is an info message'}
+        main_logger.info("This is an info message")
     elif warning_clicks:
-        return {'level': 'warning', 'message': 'This is a warning message'}
+        main_logger.warning("This is a warning message")
     elif error_clicks:
-        return {'level': 'error', 'message': 'This is an error message'}
-    return dash.no_update
+        main_logger.error("This is an error message")
+    return None, None, None
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
 ```
 
 ## Configuration
