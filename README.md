@@ -1,98 +1,88 @@
 # Dash Logger
 
-Dash Logger is a Dash component library.
+A Dash logger display component.
 
-A Dash component to visualize python loggers
+## Table of Contents
 
-Get started with:
-1. Install Dash and its dependencies: https://dash.plotly.com/installation
-2. Run `python usage.py`
-3. Visit http://localhost:8050 in your web browser
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+Dash Logger is a versatile and user-friendly logging display component for Dash applications. It provides an intuitive interface for real-time logging and monitoring, making it easier for developers to track application behavior and debug issues.
+
+## Features
+
+- Real-time log updates
+- Filter logs by log level (e.g., info, warning, error)
+- Search functionality to find specific log entries
+- Customizable display settings
+- Easy integration with existing Dash applications
+
+## Installation
+
+To install Dash Logger, use pip:
+
+```bash
+pip install dash-logger
+```
+
+## Usage
+
+Here is a simple example of how to use Dash Logger in a Dash application:
+
+```python
+import dash
+import dash_html_components as html
+from dash_logger import DashLogger
+
+app = dash.Dash(__name__)
+
+# Initialize the logger component
+logger = DashLogger(id='logger')
+
+app.layout = html.Div([
+    logger,
+    html.Button('Log Info', id='log-info-button'),
+    html.Button('Log Warning', id='log-warning-button'),
+    html.Button('Log Error', id='log-error-button')
+])
+
+@app.callback(
+    dash.dependencies.Output('logger', 'log'),
+    [dash.dependencies.Input('log-info-button', 'n_clicks'),
+     dash.dependencies.Input('log-warning-button', 'n_clicks'),
+     dash.dependencies.Input('log-error-button', 'n_clicks')]
+)
+def update_log(info_clicks, warning_clicks, error_clicks):
+    if info_clicks:
+        return {'level': 'info', 'message': 'This is an info message'}
+    elif warning_clicks:
+        return {'level': 'warning', 'message': 'This is a warning message'}
+    elif error_clicks:
+        return {'level': 'error', 'message': 'This is an error message'}
+    return dash.no_update
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+```
+
+## Configuration
+
+Dash Logger can be customized through various properties. Below are some of the key configuration options:
+
+- `log_level`: The minimum log level to display (default: 'info').
+- `max_entries`: The maximum number of log entries to keep (default: 100).
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md)
+We welcome contributions to Dash Logger! If you have an idea for a new feature or have found a bug, please open an issue or submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
 
-### Install dependencies
+## License
 
-If you have selected install_dependencies during the prompt, you can skip this part.
-
-1. Install npm packages
-    ```
-    $ npm install
-    ```
-2. Create a virtual env and activate.
-    ```
-    $ virtualenv venv
-    $ . venv/bin/activate
-    ```
-    _Note: venv\Scripts\activate for windows_
-
-3. Install python packages required to build components.
-    ```
-    $ pip install -r requirements.txt
-    ```
-4. Install the python packages for testing (optional)
-    ```
-    $ pip install -r tests/requirements.txt
-    ```
-
-### Write your component code in `src/lib/components/DashLogger.react.js`.
-
-- The demo app is in `src/demo` and you will import your example component code into your demo app.
-- Test your code in a Python environment:
-    1. Build your code
-        ```
-        $ npm run build
-        ```
-    2. Run and modify the `usage.py` sample dash app:
-        ```
-        $ python usage.py
-        ```
-- Write tests for your component.
-    - A sample test is available in `tests/test_usage.py`, it will load `usage.py` and you can then automate interactions with selenium.
-    - Run the tests with `$ pytest tests`.
-    - The Dash team uses these types of integration tests extensively. Browse the Dash component code on GitHub for more examples of testing (e.g. https://github.com/plotly/dash-core-components)
-- Add custom styles to your component by putting your custom CSS files into your distribution folder (`dash_logger`).
-    - Make sure that they are referenced in `MANIFEST.in` so that they get properly included when you're ready to publish your component.
-    - Make sure the stylesheets are added to the `_css_dist` dict in `dash_logger/__init__.py` so dash will serve them automatically when the component suite is requested.
-- [Review your code](./review_checklist.md)
-
-### Create a production build and publish:
-
-1. Build your code:
-    ```
-    $ npm run build
-    ```
-2. Create a Python distribution
-    ```
-    $ python setup.py sdist bdist_wheel
-    ```
-    This will create source and wheel distribution in the generated the `dist/` folder.
-    See [PyPA](https://packaging.python.org/guides/distributing-packages-using-setuptools/#packaging-your-project)
-    for more information.
-
-3. Test your tarball by copying it into a new environment and installing it locally:
-    ```
-    $ pip install dash_logger-0.0.1.tar.gz
-    ```
-
-4. If it works, then you can publish the component to NPM and PyPI:
-    1. Publish on PyPI
-        ```
-        $ twine upload dist/*
-        ```
-    2. Cleanup the dist folder (optional)
-        ```
-        $ rm -rf dist
-        ```
-    3. Publish on NPM (Optional if chosen False in `publish_on_npm`)
-        ```
-        $ npm publish
-        ```
-        _Publishing your component to NPM will make the JavaScript bundles available on the unpkg CDN. By default, Dash serves the component library's CSS and JS locally, but if you choose to publish the package to NPM you can set `serve_locally` to `False` and you may see faster load times._
-
-5. Share your component with the community! https://community.plotly.com/c/dash
-    1. Publish this repository to GitHub
-    2. Tag your GitHub repository with the plotly-dash tag so that it appears here: https://github.com/topics/plotly-dash
-    3. Create a post in the Dash community forum: https://community.plotly.com/c/dash
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
