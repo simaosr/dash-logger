@@ -90,7 +90,10 @@ const DashLogger = ({
 
     const setupEventSource = (name) => {
       console.log(`Attempting to connect to logger: ${name}`);
-      const eventSource = new EventSource(`/logs/stream/${name}`);
+
+      let eventSource = null;
+
+      eventSource = new EventSource(`/logs/stream/${name}`);
 
       eventSource.onmessage = (event) => {
         try {
@@ -162,68 +165,6 @@ const DashLogger = ({
       eventSourcesRef.current.push(es);
     }
   };
-
-  //   const setupSSE = () => {
-  //     // Clean up any existing event sources
-  //     eventSourcesRef.current.forEach((es) => es.close());
-  //     eventSourcesRef.current = [];
-
-  //     const setupEventSource = (name) => {
-  //       const eventSource = new EventSource(`/logs/stream/${name}`);
-
-  //       eventSource.onmessage = (event) => {
-  //         try {
-  //           const logData = JSON.parse(event.data);
-
-  //           setLogs((prevLogs) => {
-  //             // Add new log and maintain order
-  //             const updatedLogs = [...prevLogs, logData];
-
-  //             // Sort by timestamp if needed
-  //             updatedLogs.sort((a, b) => {
-  //               return new Date(a.timestamp) - new Date(b.timestamp);
-  //             });
-
-  //             // Limit log count
-  //             if (updatedLogs.length > maxLogs) {
-  //               return updatedLogs.slice(updatedLogs.length - maxLogs);
-  //             }
-  //             return updatedLogs;
-  //           });
-  //         } catch (error) {
-  //           console.error("Error processing log message:", error);
-  //         }
-  //       };
-
-  //       eventSource.onerror = (error) => {
-  //         console.error(`Error in SSE connection for logger ${name}:`, error);
-  //         eventSource.close();
-
-  //         // Try to reconnect after a delay
-  //         setTimeout(() => {
-  //           const newEventSource = setupEventSource(name);
-  //           eventSourcesRef.current = eventSourcesRef.current.filter(
-  //             (es) => es !== eventSource
-  //           );
-  //           eventSourcesRef.current.push(newEventSource);
-  //         }, 5000);
-  //       };
-
-  //       return eventSource;
-  //     };
-
-  //     // Set up event sources for all loggers
-  //     if (isCombined) {
-  //       loggerNames.forEach((name) => {
-  //         const es = setupEventSource(name);
-  //         eventSourcesRef.current.push(es);
-  //       });
-  //     } else {
-  //       const name = loggerName || id;
-  //       const es = setupEventSource(name);
-  //       eventSourcesRef.current.push(es);
-  //     }
-  //   };
 
   // Scroll to bottom when logs change
   useEffect(() => {

@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 import json
 from datetime import datetime
@@ -20,6 +21,9 @@ class DashLogManager:
         self._buffer_lock = Lock()
         self._max_buffer_size = 1000  # Maximum logs to keep per logger
         self._log_subscribers = {}
+        self.sessions = {}  # Track session -> logger mapping
+        self.inactive_timeout = 3600  # Timeout in seconds (e.g. 1 hour)
+        self._cleanup_timer = None
 
     def init_app(self, app):
         """Initialize with a Dash app"""
@@ -114,14 +118,47 @@ class DashLogManager:
 
         return logger
 
-    def get_logger(self, logger_name: str) -> logging.Logger:
-        """Get an existing logger or create a new one"""
-        if not self._initialized:
-            raise DashLoggerNotInitialized(
-                "DashLogManager not initialized with a Dash app"
-            )
+    def get_logger(self, name, session_id=None):
+        """Get or create a logger for specific session"""
+        logger_key = f"{name}_{session_id}" if session_id else name
 
-        return self.loggers.get(logger_name) or self.create_logger(logger_name)
+        if logger_key not in self.loggers:
+            self.loggers[logger_key] = create_logger(logger_key)
+            if session_id:
+                self.sessions[session_id] = logger_key
+                self._schedule_cleanup()
+
+        return self.loggers[logger_key]
+
+    def clear_logs(self, session_id=None):
+        """Clear logs for specific session or all logs"""
+        if session_id and session_id in self.sessions:
+            logger_key = self.sessions[session_id]
+            if logger_key in self.loggers:
+                self.loggers[logger_key].handlers = []
+                del self.loggers[logger_key]
+            del self.sessions[session_id]
+        else:
+            self.loggers.clear()
+            self.sessions.clear()
+
+    def _cleanup_inactive_sessions(self):
+        """Remove inactive session loggers"""
+        current_time = time.time()
+        for session_id, logger_key in list(self.sessions.items()):
+            if logger_key in self.loggers:
+                last_activity = getattr(self.loggers[logger_key], "last_activity", 0)
+                if current_time - last_activity > self.inactive_timeout:
+                    self.clear_logs(session_id)
+
+    def _schedule_cleanup(self):
+        """Schedule periodic cleanup of inactive sessions"""
+        if not self._cleanup_timer:
+            self._cleanup_timer = threading.Timer(
+                300, self._cleanup_inactive_sessions
+            )  # Run every 5 minutes
+            self._cleanup_timer.daemon = True
+            self._cleanup_timer.start()
 
     def add_log_entry(self, logger_name: str, log_entry: dict):
         """Add a log entry to the buffer"""
@@ -184,15 +221,15 @@ logger_manager = DashLogManager()
 
 
 # Convenience functions
-def init_app(app):
+def init_app(app) -> DashLogManager:
     """Initialize with a Dash app"""
     logger_manager.init_app(app)
     return logger_manager
 
 
-def get_logger(logger_name: str) -> logging.Logger:
+def get_logger(logger_name: str, session_id: str | None = None) -> logging.Logger:
     """Get an existing logger or create a new one"""
-    return logger_manager.get_logger(logger_name)
+    return logger_manager.get_logger(logger_name, session_id=session_id["uid"])
 
 
 def create_logger(logger_name: str, logger_level: str = logging.INFO) -> logging.Logger:
